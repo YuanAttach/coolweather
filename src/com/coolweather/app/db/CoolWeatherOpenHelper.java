@@ -10,7 +10,7 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper{
 	 * Province建表语句
 	 */
      public static final String CREATE_PROVINCE="create table province("
-    		                                 +"id integer primary key autoincrement"
+    		                                 +"id integer primary key autoincrement,"
     		                                 +"province_name text,"
     		                                 +"province_code text)";
      /**
@@ -25,7 +25,7 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper{
      /**
       * County建表语句
       */
-     public static final String CREATE_COUNTY="create teble county("
+     public static final String CREATE_COUNTY="create table county("
     		                                  +"id integer primary key autoincrement,"
                                               +"county_name text,"
     		                                  +"county_code text,"
