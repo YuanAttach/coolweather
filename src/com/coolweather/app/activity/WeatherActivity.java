@@ -1,5 +1,6 @@
 package com.coolweather.app.activity;
 
+import com.coolweather.app.service.AutoUpdateService;
 import com.coolweather.app.util.HttpCallBackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.Utility;
@@ -19,7 +20,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class WeatherActivity extends Activity{
+public class WeatherActivity extends Activity implements OnClickListener{
 	private LinearLayout weatherInfoLayout;
 	private TextView cityNameText;
 	private TextView publishText;
@@ -42,8 +43,8 @@ public class WeatherActivity extends Activity{
 	    temp1Text= (TextView) findViewById(R.id.temp1);
 	    temp2Text=(TextView) findViewById(R.id.temp2);
 	    currentDateText= (TextView) findViewById(R.id.current_date);
-//	    switchCity=(Button) findViewById(R.id.switch_city);
-//	    refreshWeather =(Button) findViewById(R.id.refresh_weather);
+	    switchCity=(Button) findViewById(R.id.switch_city);
+	    refreshWeather =(Button) findViewById(R.id.refresh_weather);
 	    String cityCode=getIntent().getStringExtra("city_code");
 	    String provinceCode=getIntent().getStringExtra("province_code");
  	    if(!TextUtils.isEmpty(cityCode)){
@@ -56,12 +57,12 @@ public class WeatherActivity extends Activity{
 	    	//没有县级代码的时候就直接显示本地天气
 	    	showWeather();
 	    }
-//	    switchCity.setOnClickListener(this);
-//	    refreshWeather.setOnClickListener(this);
+	    switchCity.setOnClickListener(this);
+	    refreshWeather.setOnClickListener(this);
 	    
 	}
 	
-/**	@Override
+	@Override
 	public void onClick(View v){
 		switch(v.getId()){
 		case R.id.switch_city:
@@ -70,18 +71,18 @@ public class WeatherActivity extends Activity{
 			startActivity(intent);
 			finish();
 			break;
-		case R.id.refreshWeather:
+		case R.id.refresh_weather:
 			publishText.setText("同步中。。。。。。");
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			String weatherCode=prefs.getString("weather_code", "");
 			if(!TextUtils.isEmpty(weatherCode)){
-				queryWeatherInfo(weatherCode);
+				queryFromServer("http://www.weather.com.cn/data/cityinfo/"+weatherCode+".html");
 			}
 			break;
 			default:
 				break;}
 		}
-		*/
+		
 	/**
 	 * 查询市级代号所对应的天气信息。
 	 */
@@ -128,9 +129,9 @@ public class WeatherActivity extends Activity{
 	private void showWeather(){
 		final SharedPreferences perfs = PreferenceManager.getDefaultSharedPreferences(this);
 //		Log.d("city_name",perfs.getString("city_name", ""));
-		runOnUiThread(new Runnable(){
-		@Override
-		public void run(){
+//		runOnUiThread(new Runnable(){
+//		@Override
+//		public void run(){
 		cityNameText.setText(perfs.getString("city_name", ""));
 		temp1Text.setText(perfs.getString("temp1", ""));
 		temp2Text.setText(perfs.getString("temp2", ""));
@@ -138,8 +139,11 @@ public class WeatherActivity extends Activity{
 		publishText.setText("今天"+perfs.getString("publish_time", "")+"发布");
 		currentDateText.setText(perfs.getString("current_date", ""));
 		cityNameText.setVisibility(View.VISIBLE);
-		weatherInfoLayout.setVisibility(View.VISIBLE);}
-		});
+		weatherInfoLayout.setVisibility(View.VISIBLE);
+		Intent intent = new Intent(this,AutoUpdateService.class);
+		startService(intent);
+//		}
+//		});
 		
 	}
 }
